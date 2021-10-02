@@ -1,10 +1,15 @@
-import Login from './components/login/Login' ;
+import React from 'react';
+import Header from './components/Header/Header';
+import Login from './components/Login/Login' ;
 
 function App() {
   return (
-    <div>
-      <Login />
-    </div>
+    <React.Fragment>
+      <Header />
+      <main>
+        <Login />
+      </main>
+    </React.Fragment>
   );
 }
 
