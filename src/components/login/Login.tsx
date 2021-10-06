@@ -13,9 +13,14 @@ const Login: FunctionComponent<{}> = (props) => {
   const [isPasswordValid, setIsPasswordValid] = useState(true);
   const [isFormValid, setIsFormValid] = useState(false);
 
+  
   useEffect(()=>{
     setIsFormValid(isEmailValid && isPasswordValid);
   }, [isEmailValid, isPasswordValid])
+
+  useEffect(()=>{
+    setIsFormValid(false);
+  }, [])
 
   const emailOnBlurHandler = (event: React.FocusEvent<HTMLInputElement>) => {
     let isValid = enteredEmail !== null && enteredEmail.length > 0 && enteredEmail.includes('@');
@@ -32,7 +37,6 @@ const Login: FunctionComponent<{}> = (props) => {
   const passwordOnBlurHandler = (event: React.FocusEvent<HTMLInputElement>) => {
     let isValid = enteredPassword !== null && enteredPassword.length > 8;
     setIsPasswordValid(isValid);
-    //setIsFormValid(isEmailValid && isValid);
     console.log('IsFormValid : ', isEmailValid && isValid)
   };
 
@@ -41,7 +45,6 @@ const Login: FunctionComponent<{}> = (props) => {
     setIsPasswordValid(isValid);
     setEnteredPassword(event.currentTarget.value);
   };
-
 
   const submitHandler = (event: React.FormEvent) => {
     event.preventDefault();
