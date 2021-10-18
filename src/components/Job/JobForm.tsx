@@ -1,4 +1,5 @@
 import React, { FunctionComponent, useEffect, useReducer} from 'react';
+import { act } from 'react-dom/test-utils';
 import Button from '../UI/Button';
 import classes from './JobForm.module.css';
 
@@ -20,6 +21,7 @@ type formStateType = {
 type actionType = {
   type : string;
   value : string;
+  nextState : formStateType
 } ;
 
 const initialFormState : formStateType = {
@@ -43,7 +45,6 @@ const isTitleValid = (input : string) : boolean => {
   if(input === '' || input.length<3 || titles.filter(item => item.toLowerCase() === input.toLowerCase()).length === 0){
     isValid = false;
   }
-  console.log('Title Valid : ', isValid);
   return isValid;
 };
 
@@ -64,8 +65,7 @@ const formStateReducer = (state : formStateType, action: actionType) : formState
     isInputValid = false;
   }
 
-  if(action.type === 'TITLE'){    
-  console.log('isFormValid:', isFormValid(state, 'isTitleValid') && isInputValid);  
+  if(action.type === 'TITLE'){
     return {
       ...state,
       title : action.value,
@@ -74,7 +74,6 @@ const formStateReducer = (state : formStateType, action: actionType) : formState
     }
   }
   else if(action.type === 'NAME'){
-    isInputValid = isInputValid && action.value.length <= 10
     return {...state,
       name : action.value,
       isNameValid : isInputValid,
@@ -82,7 +81,6 @@ const formStateReducer = (state : formStateType, action: actionType) : formState
     }
   }
   else if(action.type === 'ADDRESS1'){
-    isInputValid = isInputValid && action.value.length <= 10
     return {...state,
       address1 : action.value,
       isAddress1Valid : isInputValid,
@@ -90,7 +88,6 @@ const formStateReducer = (state : formStateType, action: actionType) : formState
     }
   }
   else if(action.type === 'ADDRESS2'){
-    isInputValid = isInputValid && action.value.length <= 10
     return {...state,
       address2 : action.value,
       isAddress2Valid : isInputValid,
@@ -98,11 +95,20 @@ const formStateReducer = (state : formStateType, action: actionType) : formState
     }
   }
   else if(action.type === 'PHONE'){
-    isInputValid = isInputValid && action.value.length <= 10
+    isInputValid = isInputValid && action.value.length === 10
     return {...state,
       phone : action.value,
       isPhoneValid : isInputValid,
       isFormValid : isFormValid(state, 'isPhoneValid') && isInputValid,
+    }
+  }
+  else if (action.type === 'FORM'){
+    return {
+      ...state,
+      isTitleValid : action.nextState.isTitleValid,
+      isNameValid : action.nextState.isNameValid,
+      isAddress1Valid : action.nextState.isAddress1Valid,
+      isPhoneValid : action.nextState.isPhoneValid
     }
   }
 
@@ -130,42 +136,70 @@ const JobForm : FunctionComponent<{}> = (props)=>{
   // The useEffect is used to set the initial form input controls to 'True' state.
   // The blank dependency makes sure that UseEffect is executed only once in a life time of the component
   useEffect(()=>{
-    setFormState({type: '', value: ''});
+    setFormState({type: '', value: '', nextState:initialFormState});
   }, []);
+
+  const formValidation = (state : formStateType) : boolean =>{
+    let isValid = true;
+
+    state.isTitleValid = isTitleValid(state.title);
+
+    if(state.name.trim() === '' || state.name.trim().length === 0){
+      state.isNameValid = false;
+      isValid = false;
+    }
+
+    if(state.address1.trim() === '' || state.address1.trim().length === 0){
+      state.isAddress1Valid = false;
+      isValid = false;
+    }
+
+    if(state.phone.trim() === '' || state.phone.trim().length === 0 || state.phone.trim().length < 10){
+      state.isPhoneValid = false;
+      isValid = false;
+    }
+
+    setFormState({type : 'FORM', value : '', nextState:state});
+
+    isValid = isFormValid(state, '');
+
+    return isValid;
+  }
 
   // Handlers
   const titleChangeHandler = (event: React.ChangeEvent<HTMLInputElement>)=>{
     const value = event.currentTarget.value;
-    setFormState({type : 'TITLE', value : value});
+    setFormState({type : 'TITLE', value : value, nextState:initialFormState});
   };
 
   const nameChangeHandler = (event: React.ChangeEvent<HTMLInputElement>)=>{
     const value = event.currentTarget.value;
-    setFormState({type : 'NAME', value : value});
+    setFormState({type : 'NAME', value : value, nextState:initialFormState});
   };
 
   const address1ChangeHandler = (event: React.ChangeEvent<HTMLInputElement>)=>{
     const value = event.currentTarget.value;
-    setFormState({type : 'ADDRESS1', value : value});
+    setFormState({type : 'ADDRESS1', value : value, nextState:initialFormState});
   };
 
   const address2ChangeHandler = (event: React.ChangeEvent<HTMLInputElement>)=>{
     const value = event.currentTarget.value;
-    setFormState({type : 'ADDRESS2', value : value});
+    setFormState({type : 'ADDRESS2', value : value, nextState:initialFormState});
   };
 
   const phoneChangeHandler = (event: React.ChangeEvent<HTMLInputElement>)=>{
     const value = event.currentTarget.value;
-    setFormState({type : 'PHONE', value : value});
+    setFormState({type : 'PHONE', value : value, nextState:initialFormState});
   };
 
   const submitHandler = (event: React.FormEvent) => {
 	  event.preventDefault();
+    if(formValidation(formState)){
+      console.log("Submitted");
+    };
   };
 
   const cancelHandler = () =>{
-    //props.OnCancelClick();
-    isFormValid(formState, 'isTitleValid');
   }
 
   return (
@@ -224,7 +258,7 @@ const JobForm : FunctionComponent<{}> = (props)=>{
 	  </div>
 	  <div className={classes.newJob__actions}>
       <Button onClick={cancelHandler} type='button' disabled={false}>Cancel</Button>
-      <Button onClick={cancelHandler} type="submit" disabled={false}>Add Job</Button>
+      <Button onClick={submitHandler} type="submit" disabled={false}>Add Job</Button>
 	  </div>
 	</form>);
 };
