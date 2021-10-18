@@ -29,3 +29,8 @@
     flex-direction: row;
     flex-wrap: nowrap;
   }
+
+  .newJob__control.invalid input {
+    border-color: red;
+    background: #fbdada;
+  }
