@@ -1,11 +1,7 @@
 .flip_card_outer {
-  width: 300px;
-  height: 400px;
-  margin: 25px 0;
-}
-.flip_card_outer.focus_trigger:focus {
-  outline: 5px solid greenyellow;
-  outline-offset: 5px;
+  width: 200px;
+  height: 200px;
+  margin: 5px 0;
 }
 .flip_card_outer .flip_card_inner {
   transform-style: preserve-3d;
@@ -14,11 +10,8 @@
   width: inherit;
   height: inherit;
 }
-.flip_card_outer .flip_card_inner.hover_trigger:hover {
-  transform: rotateY(140deg);
-}
 .flip_card_outer .flip_card_inner.showBack {
-  transform: rotateY(150deg);
+  transform: rotateY(180deg);
 }
 .flip_card_outer .flip_card_inner .card {
   backface-visibility: hidden;
@@ -30,11 +23,11 @@
 }
 .flip_card_outer .flip_card_inner .card.front {
   transform: rotateY(0);
-  background-color: #2d2d2d;
-  color: #fff;
+  background-color: #7a3333;
+  color: rgb(197, 125, 125);
 }
 .flip_card_outer .flip_card_inner .card.back {
   transform: rotateY(180deg);
-  background-color: #fff;
-  color: #2d2d2d;
+  background-color: rgb(23, 48, 80);
+  color: #354a77;
 }
